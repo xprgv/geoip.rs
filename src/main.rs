@@ -35,6 +35,10 @@ async fn echo(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
     }
 }
 
+async fn handle_get_geodata(req: Request<Body>) -> Result<Response<Body>, Infallible> {
+    Ok(Response::new(Body::from("test")))
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     println!("Starting http server");
@@ -48,6 +52,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let service = make_service_fn(|_| async { Ok::<_, hyper::Error>(service_fn(echo)) });
 
     let server = Server::bind(&addr).serve(service);
+
+    std::thread::spawn(|| {});
 
     println!("Listening on http://{}", addr);
 
