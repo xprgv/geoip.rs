@@ -5,6 +5,10 @@ use hyper::{
 };
 use std::{convert::Infallible, net::SocketAddr};
 
+mod api;
+mod geo;
+mod model;
+
 async fn hello_world(_req: Request<Body>) -> Result<Response<Body>, Infallible> {
     Ok(Response::new("Hello, World".into()))
 }
