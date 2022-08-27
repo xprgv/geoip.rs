@@ -1,67 +1,42 @@
-use futures_util::stream::TryStreamExt;
 use hyper::{
+    server::conn::AddrStream,
     service::{make_service_fn, service_fn},
-    Body, Method, Request, Response, Server, StatusCode,
+    Body, Request, Server,
 };
-use std::{convert::Infallible, net::SocketAddr};
+use std::{convert::Infallible, env, net::SocketAddr};
 
-mod api;
 mod geo;
 mod model;
+mod router;
 
-async fn hello_world(_req: Request<Body>) -> Result<Response<Body>, Infallible> {
-    Ok(Response::new("Hello, World".into()))
-}
-
-async fn echo(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
-    match (req.method(), req.uri().path()) {
-        (&Method::GET, "/") => Ok(Response::new(Body::from(
-            "Try POSTing data to /echo such as: `curl localhost:3000/echo -XPOST -d 'hello world'`",
-        ))),
-
-        (&Method::POST, "/echo") => Ok(Response::new(req.into_body())),
-
-        (&Method::POST, "/echo/uppercase") => {
-            let chunk_stream = req.into_body().map_ok(|chunk| {
-                chunk
-                    .iter()
-                    .map(|byte| byte.to_ascii_uppercase())
-                    .collect::<Vec<u8>>()
-            });
-            Ok(Response::new(Body::wrap_stream(chunk_stream)))
-        }
-
-        _ => {
-            let mut not_found = Response::default();
-            *not_found.status_mut() = StatusCode::NOT_FOUND;
-            Ok(not_found)
-        }
-    }
-}
-
-async fn handle_get_geodata(req: Request<Body>) -> Result<Response<Body>, Infallible> {
-    Ok(Response::new(Body::from("test")))
-}
+const MMDB_PATH: &str = "./assets/GeoLite2-City.mmdb";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    println!("Starting http server");
+    let args: Vec<String> = env::args().collect();
+
+    let geoip_service = geo::GeoipService::new(MMDB_PATH)?;
+    let router = router::Router::new(geoip_service);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
-    // let make_svc = make_service_fn(|_conn| async { Ok::<_, Infallible>(service_fn(hello_world)) });
+    let make_svc = make_service_fn(|_conn: &AddrStream| {
+        let router = router.clone();
 
-    // let server = Server::bind(&addr).serve(make_svc);
+        async {
+            Ok::<_, String>(service_fn(move |req: Request<Body>| {
+                let mut router = router.clone();
+                async move { Ok::<_, Infallible>(router.new_router(req).await?) }
+            }))
+        }
+    });
 
-    let service = make_service_fn(|_| async { Ok::<_, hyper::Error>(service_fn(echo)) });
+    let server = Server::bind(&addr).serve(make_svc);
 
-    let server = Server::bind(&addr).serve(service);
+    if let Err(e) = server.await {
+        eprintln!("server error: {}", e);
+    }
 
-    std::thread::spawn(|| {});
-
-    println!("Listening on http://{}", addr);
-
-    server.await?;
-
+    // println!("done");
     Ok(())
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Geodata {
     pub ip: String,
     pub geohash: String,
@@ -13,20 +13,20 @@ pub struct Geodata {
     pub traits: Traits,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct City {
     pub geo_name_id: u32,
     pub name_en: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Continent {
     pub code: String,
     pub geo_name_id: u32,
     pub name_en: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Country {
     pub geo_name_id: u32,
     pub is_in_european_union: bool,
@@ -34,7 +34,7 @@ pub struct Country {
     pub name_en: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Location {
     pub accuracy_radius: u32,
     pub latitude: f64,
@@ -42,21 +42,21 @@ pub struct Location {
     pub time_zone: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct RegisteredCountry {
     pub geo_name_id: u32,
     pub iso_code: String,
     pub name_en: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Subdivision {
     pub geo_name_id: u32,
     pub iso_code: String,
     pub name_en: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Traits {
     pub is_anonymous_proxy: bool,
     pub is_satellite_provider: bool,
