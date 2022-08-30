@@ -31,6 +31,13 @@ impl GeoipService {
     fn fill_geodata(city: geoip2::City) -> model::Geodata {
         let mut geodata = model::Geodata::default();
 
+        if let Some(city) = city.city {
+            geodata.city.geo_name_id = city.geoname_id.unwrap_or_default();
+
+            let name_en = city.names.unwrap_or_default();
+            // let name_en = name_en.get("en").unwrap_or_else(|| {});
+            println!("{:?}", name_en);
+        };
         geodata
     }
 }

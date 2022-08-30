@@ -39,27 +39,10 @@ impl Router {
             return Ok(response);
         }
 
-        // Ok(Response::new(Body::new("test")))
-
-        // match (req.method(), req.uri().path()) {
-        //     (&Method::GET | &Method::POST, "/geoip") => {
-        //         let response = Response::new(Body::from("ok"));
-        //         Ok(response)
-        //     }
-        //     (&Method::GET | &Method::POST, "/geoip") => {
-        //         let response = Response::new(Body::from("specify ip address"));
-        //         Ok(response)
-        //     }
-        //     _ => {
-        //         let response = Response::new(Body::from("path not found"));
-        //         Ok(response)
-        //     }
-        // }
-
         let mut parts = url.split("/");
-        let ip_string = match parts.nth(3) {
+        let ip_string = match parts.nth(2) {
             None => {
-                let response = Response::new(Body::from(""));
+                let response = Response::new(Body::from("failed to split"));
                 return Ok(response);
             }
             Some(ip_string) => ip_string,
@@ -93,8 +76,6 @@ impl Router {
         response
             .headers_mut()
             .insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
-
-        // let default_status = StatusCode::INTERNAL_SERVER_ERROR;
 
         Ok(response)
     }
