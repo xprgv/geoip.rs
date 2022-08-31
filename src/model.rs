@@ -36,7 +36,7 @@ pub struct Country {
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Location {
-    pub accuracy_radius: u32,
+    pub accuracy_radius: u16,
     pub latitude: f64,
     pub longitude: f64,
     pub time_zone: String,
