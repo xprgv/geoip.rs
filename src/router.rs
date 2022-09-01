@@ -22,7 +22,7 @@ impl Router {
     }
 
     pub async fn new_router(&mut self, req: Request<Body>) -> Result<Response<Body>, Infallible> {
-        println!("{}", req.uri().path());
+        // println!("{}", req.uri().path());
 
         let url = req.uri().path();
 

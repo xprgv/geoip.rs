@@ -9,7 +9,7 @@ pub struct Geodata {
     pub country: Country,
     pub location: Location,
     pub registered_country: RegisteredCountry,
-    pub subdivisions: Box<[Subdivision]>,
+    pub subdivisions: Box<Vec<Subdivision>>,
     pub traits: Traits,
 }
 
