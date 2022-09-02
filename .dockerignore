@@ -1,4 +1,4 @@
-.target
-Dockerfile
+target
+Dockerfile*
 *.md
-assets
+# assets

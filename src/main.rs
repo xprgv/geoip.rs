@@ -46,7 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     });
 
-    println!("Listen server on {:?}", addr);
+    println!("Starting geoip service on: {}", addr);
     let server = Server::bind(&addr).serve(make_svc);
 
     if let Err(e) = server.await {
