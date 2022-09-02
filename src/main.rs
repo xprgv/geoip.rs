@@ -22,11 +22,7 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    // let args: Vec<String> = env::args().collect();
-    // println!("{:?}", args);
-
     let arguments = Args::parse();
-    // println!("{:?}", arguments);
 
     let geoip_service = geo::GeoipService::new(&arguments.mmdb_path)?;
     let router = router::Router::new(geoip_service);
@@ -38,8 +34,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             std::process::exit(1);
         }
     };
-    // let addr: SocketAddr = arguments.addr.parse().unwrap();
-    // let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
 
     let make_svc = make_service_fn(|_conn: &AddrStream| {
         let router = router.clone();
@@ -47,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         async {
             Ok::<_, String>(service_fn(move |req: Request<Body>| {
                 let mut router = router.clone();
-                async move { Ok::<_, Infallible>(router.new_router(req).await?) }
+                async move { Ok::<_, Infallible>(router.route_request(req).await?) }
             }))
         }
     });
@@ -59,6 +53,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         eprintln!("server error: {}", e);
     }
 
-    // println!("done");
     Ok(())
 }
