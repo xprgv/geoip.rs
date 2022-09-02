@@ -1,6 +1,5 @@
 use anyhow::Result as AnyResult;
 use geohash::{encode, Coordinate};
-use geoip::model::Subdivision;
 use maxminddb::{geoip2, MaxMindDBError};
 use std::{net::IpAddr, sync::Arc};
 

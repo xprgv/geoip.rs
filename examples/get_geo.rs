@@ -11,6 +11,4 @@ fn main() {
     let city: geoip2::City = reader.lookup(ip).expect("Failed to get ip");
 
     println!("{:?}", city);
-
-    // if let Some(city) = city {}
 }

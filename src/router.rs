@@ -1,10 +1,4 @@
-use anyhow::Result as AnyResult;
-use bytes::Bytes;
-use hyper::{
-    header::{self, CONTENT_TYPE},
-    http::HeaderValue,
-    Body, Method, Request, Response, StatusCode,
-};
+use hyper::{header::CONTENT_TYPE, http::HeaderValue, Body, Request, Response, StatusCode};
 use std::{convert::Infallible, net::IpAddr};
 
 use crate::geo;
@@ -21,35 +15,36 @@ impl Router {
         }
     }
 
-    pub async fn new_router(&mut self, req: Request<Body>) -> Result<Response<Body>, Infallible> {
-        // println!("{}", req.uri().path());
-
-        let url = req.uri().path();
-
-        if !url.starts_with("/geoip") {
-            let response_body = Body::from("");
-            let mut response = Response::new(response_body);
-            *response.status_mut() = StatusCode::NOT_FOUND;
-
-            return Ok(response);
+    pub async fn route_request(
+        &mut self,
+        req: Request<Body>,
+    ) -> Result<Response<Body>, Infallible> {
+        let mut segments = Vec::new();
+        for s in req.uri().path().split("/") {
+            match s {
+                "" | "." => {}
+                ".." => {
+                    segments.pop();
+                }
+                s => segments.push(s),
+            }
         }
 
-        if !url.starts_with("/geoip/") {
-            let response = Response::new(Body::from("use /geoip/{ip}"));
-            return Ok(response);
-        }
-
-        let mut parts = url.split("/");
-        let ip_string = match parts.nth(2) {
-            None => {
-                let response = Response::new(Body::from("failed to split"));
+        match segments[..] {
+            ["geoip", ip_string] => {
+                return self.handle_geoip(ip_string);
+            }
+            _ => {
+                let mut response = Response::new(Body::from(""));
+                *response.status_mut() = StatusCode::NOT_FOUND;
                 return Ok(response);
             }
-            Some(ip_string) => ip_string,
-        };
+        }
+    }
 
+    fn handle_geoip(&mut self, ip_string: &str) -> Result<Response<Body>, Infallible> {
         let ip = match ip_string.parse::<IpAddr>() {
-            Err(e) => {
+            Err(_) => {
                 let response = Response::new(Body::from("err in parsing ip"));
                 return Ok(response);
             }
@@ -57,7 +52,7 @@ impl Router {
         };
 
         let geodata = match self.geoip.get_ip(ip) {
-            Err(e) => {
+            Err(_) => {
                 let response = Response::new(Body::from("err in geoip service"));
                 return Ok(response);
             }
@@ -65,7 +60,7 @@ impl Router {
         };
 
         let geodata_parsed = match serde_json::to_string(&geodata) {
-            Err(e) => {
+            Err(_) => {
                 let response = Response::new(Body::from("err in marshaling geodata"));
                 return Ok(response);
             }
