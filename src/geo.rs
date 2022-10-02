@@ -95,9 +95,12 @@ impl GeoipService {
 
         if let Some(subdivisions) = city.subdivisions {
             for sub in subdivisions {
-                let mut subdivision_model = model::Subdivision::default();
-                subdivision_model.geo_name_id = sub.geoname_id.unwrap_or_default();
-                subdivision_model.iso_code = sub.iso_code.unwrap_or_default().to_string();
+                let mut subdivision_model = model::Subdivision {
+                    geo_name_id: sub.geoname_id.unwrap_or_default(),
+                    iso_code: sub.iso_code.unwrap_or_default().to_string(),
+                    name_en: "".to_string(),
+                };
+
                 if let Some(names_tree) = sub.names {
                     subdivision_model.name_en = names_tree.get("en").unwrap_or(&"").to_string();
                 }
@@ -105,7 +108,7 @@ impl GeoipService {
                 subdivisions_models.push(subdivision_model);
             }
         }
-        geodata.subdivisions = Box::new(subdivisions_models);
+        geodata.subdivisions = subdivisions_models;
 
         if let Some(traits) = city.traits {
             geodata.traits.is_anonymous_proxy = traits.is_anonymous_proxy.unwrap_or_default();

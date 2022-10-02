@@ -20,7 +20,7 @@ impl Router {
         req: Request<Body>,
     ) -> Result<Response<Body>, Infallible> {
         let mut segments = Vec::new();
-        for s in req.uri().path().split("/") {
+        for s in req.uri().path().split('/') {
             match s {
                 "" | "." => {}
                 ".." => {
@@ -31,13 +31,11 @@ impl Router {
         }
 
         match segments[..] {
-            ["geoip", ip_string] => {
-                return self.handle_geoip(ip_string);
-            }
+            ["geoip", ip_string] => self.handle_geoip(ip_string),
             _ => {
                 let mut response = Response::new(Body::from(""));
                 *response.status_mut() = StatusCode::NOT_FOUND;
-                return Ok(response);
+                Ok(response)
             }
         }
     }

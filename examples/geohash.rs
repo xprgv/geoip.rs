@@ -1,7 +1,5 @@
 extern crate geohash;
 
-use std::error::Error;
-
 use geohash::{encode, Coordinate};
 
 fn main() {

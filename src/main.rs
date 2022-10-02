@@ -4,7 +4,7 @@ use hyper::{
     service::{make_service_fn, service_fn},
     Body, Request, Server,
 };
-use std::{convert::Infallible, net::SocketAddr};
+use std::net::SocketAddr;
 
 mod geo;
 mod model;
@@ -41,7 +41,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         async {
             Ok::<_, String>(service_fn(move |req: Request<Body>| {
                 let mut router = router.clone();
-                async move { Ok::<_, Infallible>(router.route_request(req).await?) }
+                // async move { Ok::<_, Infallible>(router.route_request(req).await?) }
+                async move { router.route_request(req).await }
             }))
         }
     });
