@@ -3,6 +3,7 @@
 Api service for getting geo information from ip address
 
 ## Run
+
 ```sh
 cargo r -- --addr=127.0.0.1:3000 --mmdb-path=./assets/GeoLite2-City.mmdb
 ```

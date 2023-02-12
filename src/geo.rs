@@ -1,5 +1,6 @@
 use anyhow::Result as AnyResult;
-use geohash::{encode, Coordinate};
+use geo::Coord;
+use geohash::encode;
 use maxminddb::{geoip2, MaxMindDBError};
 use std::{net::IpAddr, sync::Arc};
 
@@ -61,7 +62,7 @@ impl GeoipService {
             geodata.location.time_zone = location.time_zone.unwrap_or("").to_string();
             geodata.location.accuracy_radius = location.accuracy_radius.unwrap_or_default();
 
-            if location.latitude != None && location.longitude != None {
+            if location.latitude.is_some() && location.longitude.is_some() {
                 let latitude = location.latitude.unwrap();
                 let longitude = location.longitude.unwrap();
 
@@ -69,7 +70,7 @@ impl GeoipService {
                 geodata.location.longitude = longitude;
 
                 geodata.geohash = encode(
-                    Coordinate {
+                    Coord {
                         x: latitude,
                         y: longitude,
                     },

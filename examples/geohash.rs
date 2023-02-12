@@ -1,9 +1,10 @@
 extern crate geohash;
 
-use geohash::{encode, Coordinate};
+use geo::Coord;
+use geohash::encode;
 
 fn main() {
-    let c = Coordinate {
+    let c = Coord {
         x: 112.5584f64,
         y: 37.8324f64,
     };
